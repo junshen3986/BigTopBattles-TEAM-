@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
          input_xMovement = ctx.ReadValue<float>();  //-1 for left, 1 for right. 
     }
 
-    public void Imputs_Jump(InputAction.CallbackContext ctx)
+    public void Inputs_Jump(InputAction.CallbackContext ctx)
     {
         if(ctx.started) { input_Jump = true;}
         if(ctx.canceled) { input_Jump = false;}
