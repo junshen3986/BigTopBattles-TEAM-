@@ -11,15 +11,16 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded;
     private Vector3 jump;
-    private float jumpForce = 100f;
+    public float jumpForce = 4f;
+
 
     void Start()
     {
         playerController = GameObject.FindWithTag("PlayerController").GetComponent<PlayerController>();
         playerRb = GetComponent<Rigidbody>();
-        playerMove = new Vector3 (0.5f, 0f,0f);
+        playerMove = new Vector3 (0.15f, 0f,0f);
         
-        jump = new Vector3(0.0f, 2.0f, 0.0f);
+        jump = new Vector3(0.0f, 1.0f, 0.0f);
     }
 
     // Update is called once per frame
@@ -33,6 +34,15 @@ public class PlayerMovement : MonoBehaviour
         MoveLeftRight();
         MoveJump();
 
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        isGrounded = true;
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        isGrounded = false;
     }
 
     void MoveLeftRight()
@@ -50,9 +60,9 @@ public class PlayerMovement : MonoBehaviour
     void MoveJump()
     {
        
-            if (playerController.input_Jump)
+            if (playerController.input_Jump && isGrounded )
         {
-            playerRb.AddForce(jump * jumpForce * Time.deltaTime, ForceMode.Impulse);
+            playerRb.AddForce(jump * jumpForce, ForceMode.Impulse);
         }
     }
 }
