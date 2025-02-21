@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded;
     private Vector3 jump;
-    public float jumpForce = 4f;
+    public float jumpForce = 7f;
 
 
     void Start()
@@ -38,7 +38,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        isGrounded = true;
+        if (collision.gameObject.CompareTag("Stage"))
+        {
+            isGrounded = true;
+        }      
     }
     private void OnCollisionExit(Collision collision)
     {
