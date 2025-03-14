@@ -13,11 +13,18 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 jump;
     public float jumpForce = 7f;
 
+    public Animator playerAnimator;
+    public int animatorID;
+    public int tripleCount = 0;
+
+    public bool attacked;
+    public bool isReturning;
 
     void Start()
     {
         playerController = GameObject.FindWithTag("PlayerController").GetComponent<PlayerController>();
         playerRb = GetComponent<Rigidbody>();
+        playerAnimator = GetComponent<Animator>();
         playerMove = new Vector3 (0.15f, 0f,0f);
         
         jump = new Vector3(0.0f, 1.0f, 0.0f);
@@ -27,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         MovementManager();
+        AnimatorControl();
+        AttackManager();
     }
 
     void MovementManager()
@@ -34,6 +43,51 @@ public class PlayerMovement : MonoBehaviour
         MoveLeftRight();
         MoveJump();
 
+    }
+
+    void AttackManager()
+    {
+        switch (animatorID)
+        {
+            case 0: //idle
+                playerAnimator.SetInteger("Attack_ID", 0);
+                break;
+
+            case 1: // light punch
+                playerAnimator.SetInteger("Attack_ID", 1);
+                break;
+        }
+    }
+
+    void AnimatorControl()
+    {
+        if (playerController.input_Punch)
+        {
+            if (!attacked)
+            {
+                animatorID = 1;
+                //RepeatAttack();
+                attacked = true;         
+            }
+            else if (attacked)
+            {
+                animatorID = 0;
+            }
+        }
+        else {
+            animatorID = 0;
+            attacked = false;
+        }
+
+    }
+
+    void ReturningTrue()
+    {
+        isReturning = true;
+    }
+    void ReturningFalse()
+    {
+        isReturning = false;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -68,4 +122,20 @@ public class PlayerMovement : MonoBehaviour
             playerRb.AddForce(jump * jumpForce, ForceMode.Impulse);
         }
     }
+
+    /*void RepeatAttack()
+    {
+            if (tripleCount < 2)
+            {
+                tripleCount++;
+            }
+            else if (tripleCount >= 2)
+            {
+                tripleCount = 0;
+            }
+            playerAnimator.SetInteger("Attack_TripleCount", tripleCount);
+    }
+    */
+    
+
 }
