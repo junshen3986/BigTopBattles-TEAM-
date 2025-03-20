@@ -1,7 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Model/Emission.mat.meta
 
 guid: 27f2131bb402d6e429a3d6318ce5c507
 
+=======
+guid: 39c54cbfdaf0e8044a0ecc258b07ca8c
+>>>>>>> parent of fb12c39 (Lighting):Assets/Model/No Name.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 2100000
