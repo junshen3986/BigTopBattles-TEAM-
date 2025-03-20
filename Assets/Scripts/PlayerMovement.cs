@@ -20,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     public bool attacked;
     public bool isReturning;
 
+    public bool isCrouching;
+
     void Start()
     {
         playerController = GameObject.FindWithTag("PlayerController").GetComponent<PlayerController>();
@@ -41,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     void MovementManager()
     {
         MoveJump();
+        MoveCrouch();
         MoveLeftRight();
         
 
@@ -105,12 +108,12 @@ public class PlayerMovement : MonoBehaviour
 
     void MoveLeftRight()
     {
-        if (playerController.input_xMovement < 0)
+        if (playerController.input_xMovement < 0 && !isCrouching)
         {
             playerAnimator.SetBool("isWalking", true);
             transform.position -= playerMove;
         }
-        else if (playerController.input_xMovement > 0)
+        else if (playerController.input_xMovement > 0 && !isCrouching)
         {
             playerAnimator.SetBool("isWalking", true);
             transform.position += playerMove;  
@@ -130,6 +133,19 @@ public class PlayerMovement : MonoBehaviour
         } else if (isGrounded)
         {
             playerAnimator.SetBool("isJumping", false);
+        }
+    }
+
+    void MoveCrouch()
+    {
+        if (playerController.input_Crouch)
+        {
+            playerAnimator.SetBool("isCrouching", true);
+            isCrouching = true;
+        } else if (!playerController.input_Crouch)
+        {
+            playerAnimator.SetBool("isCrouching", false);
+            isCrouching = false;
         }
     }
 

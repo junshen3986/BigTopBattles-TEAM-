@@ -437,6 +437,7 @@ MonoBehaviour:
   tripleCount: 0
   attacked: 0
   isReturning: 0
+  isCrouching: 0
 --- !u!54 &199884150
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1032,6 +1033,7 @@ MonoBehaviour:
   input_Jump: 0
   input_Kick: 0
   input_Punch: 0
+  input_Crouch: 0
 --- !u!114 &1544969876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1122,6 +1124,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 8731d346-e16e-4d5c-9fd3-a0ecb1308149
     m_ActionName: PlayerMovement/Punch[/Keyboard/a,/Keyboard/s,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1544969874}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 104d8977-c7e5-48b0-b77e-5f6a83ab47f4
+    m_ActionName: PlayerMovement/Crouch[/Keyboard/downArrow]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: PlayerMovement
