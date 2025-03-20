@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public bool input_Jump;
     public bool input_Kick;
     public bool input_Punch;
+    public bool input_Crouch;
 
     private InputActionMap inputActions;
     // Start is called before the first frame update
@@ -43,5 +44,11 @@ public class PlayerController : MonoBehaviour
     {
         if (ctx.started) { input_Punch = true; }
         if (ctx.canceled) { input_Punch = false; }
+    }
+
+    public void Inputs_Crouch(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started) { input_Crouch = true; }
+        if (ctx.canceled) { input_Crouch = false; }
     }
 }
