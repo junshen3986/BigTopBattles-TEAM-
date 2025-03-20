@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody playerRb;
     private Vector3 playerMove;
 
-    private bool isGrounded;
+    public bool isGrounded;
     private Vector3 jump;
     public float jumpForce = 7f;
 
@@ -40,8 +40,9 @@ public class PlayerMovement : MonoBehaviour
 
     void MovementManager()
     {
-        MoveLeftRight();
         MoveJump();
+        MoveLeftRight();
+        
 
     }
 
@@ -106,11 +107,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (playerController.input_xMovement < 0)
         {
+            playerAnimator.SetBool("isWalking", true);
             transform.position -= playerMove;
         }
         else if (playerController.input_xMovement > 0)
         {
+            playerAnimator.SetBool("isWalking", true);
             transform.position += playerMove;  
+        } else
+        {
+            playerAnimator.SetBool("isWalking", false);
         }
     }
 
@@ -119,7 +125,11 @@ public class PlayerMovement : MonoBehaviour
        
             if (playerController.input_Jump && isGrounded )
         {
+            playerAnimator.SetBool("isJumping", true);
             playerRb.AddForce(jump * jumpForce, ForceMode.Impulse);
+        } else if (isGrounded)
+        {
+            playerAnimator.SetBool("isJumping", false);
         }
     }
 
