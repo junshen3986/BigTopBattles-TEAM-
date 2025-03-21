@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody playerRb;
     private Vector3 playerMove;
 
-    private bool isGrounded;
+    public bool isGrounded;
     private Vector3 jump;
     public float jumpForce = 7f;
 
@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
 
     public bool attacked;
     public bool isReturning;
+
+    public bool isCrouching;
 
     void Start()
     {
@@ -40,8 +42,10 @@ public class PlayerMovement : MonoBehaviour
 
     void MovementManager()
     {
-        MoveLeftRight();
         MoveJump();
+        MoveCrouch();
+        MoveLeftRight();
+        
 
     }
 
@@ -104,13 +108,18 @@ public class PlayerMovement : MonoBehaviour
 
     void MoveLeftRight()
     {
-        if (playerController.input_xMovement < 0)
+        if (playerController.input_xMovement < 0 && !isCrouching)
         {
+            playerAnimator.SetBool("isWalking", true);
             transform.position -= playerMove;
         }
-        else if (playerController.input_xMovement > 0)
+        else if (playerController.input_xMovement > 0 && !isCrouching)
         {
+            playerAnimator.SetBool("isWalking", true);
             transform.position += playerMove;  
+        } else
+        {
+            playerAnimator.SetBool("isWalking", false);
         }
     }
 
@@ -119,7 +128,24 @@ public class PlayerMovement : MonoBehaviour
        
             if (playerController.input_Jump && isGrounded )
         {
+            playerAnimator.SetBool("isJumping", true);
             playerRb.AddForce(jump * jumpForce, ForceMode.Impulse);
+        } else if (isGrounded)
+        {
+            playerAnimator.SetBool("isJumping", false);
+        }
+    }
+
+    void MoveCrouch()
+    {
+        if (playerController.input_Crouch)
+        {
+            playerAnimator.SetBool("isCrouching", true);
+            isCrouching = true;
+        } else if (!playerController.input_Crouch)
+        {
+            playerAnimator.SetBool("isCrouching", false);
+            isCrouching = false;
         }
     }
 
