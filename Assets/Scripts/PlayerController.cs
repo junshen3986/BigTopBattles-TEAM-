@@ -9,7 +9,9 @@ public class PlayerController : MonoBehaviour
     public float input_xMovement;
     public bool input_Jump;
     public bool input_Kick;
+    public bool input_HeavyKick;
     public bool input_Punch;
+    public bool input_HeavyPunch;
     public bool input_Crouch;
 
     private InputActionMap inputActions;
@@ -40,10 +42,21 @@ public class PlayerController : MonoBehaviour
         if (ctx.started) { input_Kick = true; }
         if (ctx.canceled) { input_Kick = false; }
     }
+    public void Inputs_HeavyKick(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started) { input_HeavyKick = true; }
+        if (ctx.canceled) { input_HeavyKick = false; }
+    }
     public void Inputs_Punch(InputAction.CallbackContext ctx)
     {
         if (ctx.started) { input_Punch = true; }
         if (ctx.canceled) { input_Punch = false; }
+    }
+
+    public void Inputs_HeavyPunch(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started) { input_HeavyPunch = true; }
+        if (ctx.canceled) { input_HeavyPunch = false; }
     }
 
     public void Inputs_Crouch(InputAction.CallbackContext ctx)

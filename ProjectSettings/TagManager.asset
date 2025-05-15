@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayerController
   - Stage
+  - GroupCam
   layers:
   - Default
   - TransparentFX

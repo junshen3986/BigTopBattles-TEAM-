@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private PlayerController playerController;
+    public PlayerController playerController;
     private Rigidbody playerRb;
     private Vector3 playerMove;
 
@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
-        playerController = GameObject.FindWithTag("PlayerController").GetComponent<PlayerController>();
+        playerController = GetComponent<PlayerController>();
         playerRb = GetComponent<Rigidbody>();
         playerAnimator = GetComponent<Animator>();
         playerMove = new Vector3 (0.15f, 0f,0f);
@@ -57,8 +57,23 @@ public class PlayerMovement : MonoBehaviour
                 playerAnimator.SetInteger("Attack_ID", 0);
                 break;
 
-            case 1: // light punch
+            case 1: // light standing
                 playerAnimator.SetInteger("Attack_ID", 1);
+                break;
+            case 2: // heavy standing
+                playerAnimator.SetInteger("Attack_ID", 2);
+                break;
+            case 3: // light crouch
+                playerAnimator.SetInteger("Attack_ID", 3);
+                break;
+            case 4: // heavy crouch
+                playerAnimator.SetInteger("Attack_ID", 4);
+                break;
+            case 5: // light jump
+                playerAnimator.SetInteger("Attack_ID", 5);
+                break;
+            case 6: // heavy jump
+                playerAnimator.SetInteger("Attack_ID", 6);
                 break;
         }
     }
@@ -79,6 +94,65 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         else {
+            animatorID = 0;
+            attacked = false;
+        }
+
+        if (playerController.input_HeavyPunch)
+        {
+            if (!attacked)
+            {
+                animatorID = 2;
+                //RepeatAttack();
+                attacked = true;
+            }
+            else if (attacked)
+            {
+                animatorID = 0;
+            }
+        }
+        else
+        {
+            animatorID = 0;
+            attacked = false;
+        }
+
+
+        if (playerController.input_Kick)
+        {
+            if (!attacked)
+            {
+                animatorID = 3;
+                //RepeatAttack();
+                attacked = true;
+            }
+            else if (attacked)
+            {
+                animatorID = 0;
+            }
+        }
+        else
+        {
+            animatorID = 0;
+            attacked = false;
+        }
+
+
+        if (playerController.input_HeavyKick)
+        {
+            if (!attacked)
+            {
+                animatorID = 4;
+                //RepeatAttack();
+                attacked = true;
+            }
+            else if (attacked)
+            {
+                animatorID = 0;
+            }
+        }
+        else
+        {
             animatorID = 0;
             attacked = false;
         }
