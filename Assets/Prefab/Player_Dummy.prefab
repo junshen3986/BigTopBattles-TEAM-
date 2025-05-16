@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7227596292539240988}
   - component: {fileID: 1115789613890986132}
   - component: {fileID: 8389012351613293930}
+  - component: {fileID: 4778507351369002191}
   - component: {fileID: 2019536782112796143}
   - component: {fileID: 4771092661746855243}
   - component: {fileID: 728230737471655974}
@@ -164,6 +165,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4778507351369002191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3662286472142631450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a47b010058e7b4d87a75e02fe5fdd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myHP: 0
 --- !u!114 &2019536782112796143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -347,6 +361,7 @@ MonoBehaviour:
   attacked: 0
   isReturning: 0
   isCrouching: 0
+  attackPointPM: 0
 --- !u!114 &2157363188236366601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,6 +377,10 @@ MonoBehaviour:
   player: {fileID: 3662286472142631450}
   enemy: {fileID: 0}
   distance: {x: 0, y: 0, z: 0}
+  returnGameobject: {fileID: 0}
+  players: []
+  player2check: 0
+  didPlayer2check: 0
 --- !u!114 &7307631917662357534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,7 +404,7 @@ GameObject:
   - component: {fileID: 208293578576767557}
   - component: {fileID: 5470311040059355352}
   - component: {fileID: 6047045889544959496}
-  - component: {fileID: 3617917208483937894}
+  - component: {fileID: 2378460110188477180}
   m_Layer: 8
   m_Name: Attack_Hitbox
   m_TagString: Untagged
@@ -484,7 +503,7 @@ CapsuleCollider:
   m_Height: 0.99999994
   m_Direction: 1
   m_Center: {x: 0, y: -0.0000019073486, z: 0}
---- !u!114 &3617917208483937894
+--- !u!114 &2378460110188477180
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -496,3 +515,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e38db42d8b4d86043981df75beef6623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyHP: {fileID: 0}
+  attackPoint: 0

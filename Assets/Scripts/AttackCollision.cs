@@ -13,10 +13,22 @@ public class AttackCollision : MonoBehaviour
 
     Vector3 attackForce;
 
+    GameManager gm;
+
+    public HP enemyHP;
+
+    public float attackPoint;
+    private bool isAttacked;
+
     private void Start()
     {
         playerMovement = GetComponentInParent<PlayerMovement>();
         facing = GetComponentInParent<FacingEachOther>();
+    }
+
+    private void Update()
+    {
+        attackPoint = playerMovement.attackPointPM;
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -31,11 +43,21 @@ public class AttackCollision : MonoBehaviour
         }
 
 
-        if (playerMovement.isReturning == true)
+        if (!isAttacked)
         {
             Debug.Log("ouch");
             enemyRB = collision.gameObject.GetComponent<Rigidbody>();
             enemyRB.AddForce(attackForce, ForceMode.Impulse);
+
+            
+
+            enemyHP = collision.gameObject.GetComponent<HP>();
+            enemyHP.myHP -= attackPoint;
+            print(enemyHP.myHP);
+            isAttacked = true;
+        } else if (playerMovement.isReturning == false)
+        {
+            isAttacked = false;
         }
     }
 

@@ -22,9 +22,12 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isCrouching;
 
+    public float attackPointPM;
+
     void Start()
     {
         playerController = GetComponent<PlayerController>();
+
         playerRb = GetComponent<Rigidbody>();
         playerAnimator = GetComponent<Animator>();
         playerMove = new Vector3 (0.15f, 0f,0f);
@@ -32,11 +35,14 @@ public class PlayerMovement : MonoBehaviour
         jump = new Vector3(0.0f, 1.0f, 0.0f);
     }
 
+    private void Update()
+    {
+        AnimatorControl();
+    }
     // Update is called once per frame
     void FixedUpdate()
     {
         MovementManager();
-        AnimatorControl();
         AttackManager();
     }
 
@@ -63,18 +69,6 @@ public class PlayerMovement : MonoBehaviour
             case 2: // heavy standing
                 playerAnimator.SetInteger("Attack_ID", 2);
                 break;
-            case 3: // light crouch
-                playerAnimator.SetInteger("Attack_ID", 3);
-                break;
-            case 4: // heavy crouch
-                playerAnimator.SetInteger("Attack_ID", 4);
-                break;
-            case 5: // light jump
-                playerAnimator.SetInteger("Attack_ID", 5);
-                break;
-            case 6: // heavy jump
-                playerAnimator.SetInteger("Attack_ID", 6);
-                break;
         }
     }
 
@@ -86,76 +80,38 @@ public class PlayerMovement : MonoBehaviour
             {
                 animatorID = 1;
                 //RepeatAttack();
-                attacked = true;         
+                attacked = true;
+                attackPointPM = 5;
             }
-            else if (attacked)
-            {
-                animatorID = 0;
-            }
-        }
-        else {
-            animatorID = 0;
-            attacked = false;
-        }
 
-        if (playerController.input_HeavyPunch)
+           
+            }
+        else if (playerController.input_HeavyPunch)
         {
             if (!attacked)
             {
                 animatorID = 2;
                 //RepeatAttack();
                 attacked = true;
+                attackPointPM = 10;
             }
-            else if (attacked)
-            {
-                animatorID = 0;
-            }
+
         }
-        else
+
+
+
+        
+        else 
         {
             animatorID = 0;
+            attackPointPM = 0;
             attacked = false;
         }
 
+    }
 
-        if (playerController.input_Kick)
-        {
-            if (!attacked)
-            {
-                animatorID = 3;
-                //RepeatAttack();
-                attacked = true;
-            }
-            else if (attacked)
-            {
-                animatorID = 0;
-            }
-        }
-        else
-        {
-            animatorID = 0;
-            attacked = false;
-        }
-
-
-        if (playerController.input_HeavyKick)
-        {
-            if (!attacked)
-            {
-                animatorID = 4;
-                //RepeatAttack();
-                attacked = true;
-            }
-            else if (attacked)
-            {
-                animatorID = 0;
-            }
-        }
-        else
-        {
-            animatorID = 0;
-            attacked = false;
-        }
+    void SetAttackDamage()
+    {
 
     }
 
