@@ -93,13 +93,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(lightPunchKey)) anim.SetTrigger("LightPunch1");
         if (Input.GetKeyDown(heavyPunchKey)) anim.SetTrigger("HeavyPunch1");
 
-        if (Input.GetKeyDown(heavyPunchKey))
+       /* if (Input.GetKeyDown(heavyPunchKey))
         {
             if (anim.GetBool("IsCrouching"))
                 anim.SetTrigger("CrouchHeavyPunch");
             else
                 anim.SetTrigger("HeavyPunch1");
-        }
+        } */
 
         if (opponent != null)
         {
