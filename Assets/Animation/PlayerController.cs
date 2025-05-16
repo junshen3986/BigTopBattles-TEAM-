@@ -91,6 +91,7 @@ public class PlayerController : MonoBehaviour
 
         // 7) Attacks
         if (Input.GetKeyDown(lightPunchKey)) anim.SetTrigger("LightPunch1");
+        if (Input.GetKeyDown(heavyPunchKey)) anim.SetTrigger("HeavyPunch1");
 
         if (Input.GetKeyDown(heavyPunchKey))
         {
@@ -99,7 +100,6 @@ public class PlayerController : MonoBehaviour
             else
                 anim.SetTrigger("HeavyPunch1");
         }
-
 
         if (opponent != null)
         {
