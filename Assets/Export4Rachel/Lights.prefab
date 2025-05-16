@@ -331,9 +331,9 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 0.9528302, g: 0.85844606, b: 0.89788586, a: 1}
-  m_Intensity: 309.3
-  m_Range: 9.84
+  m_Color: {r: 0.7169812, g: 0, b: 0.073912084, a: 1}
+  m_Intensity: 50
+  m_Range: 1104.8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1249,7 +1249,6 @@ Transform:
   - {fileID: 1169646616955454873}
   - {fileID: 4428865073349232237}
   - {fileID: 1306829257815720485}
-  - {fileID: 384632254886133852}
   - {fileID: 5423725264443722462}
   - {fileID: 2985274369408227648}
   - {fileID: 2395590626932892844}
@@ -1257,6 +1256,7 @@ Transform:
   - {fileID: 329387891642410385}
   - {fileID: 2686059809793704958}
   - {fileID: 4185738135208988564}
+  - {fileID: 384632254886133852}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9041791477186858204
