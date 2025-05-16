@@ -1,4 +1,3 @@
-// Hitbox.cs
 using UnityEngine;
 
 public class Hitbox : MonoBehaviour
@@ -7,13 +6,12 @@ public class Hitbox : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Look for a PlayerController on the hurt object’s root
         var pc = other.GetComponentInParent<PlayerController>();
         if (pc != null)
         {
             pc.TakeDamage(damage);
-            // optional: disable this hitbox so it only hits once
-            gameObject.SetActive(false);
+            // no more disabling the GameObject itself
+            // we leave the collider.enabled toggles to PlayerController
         }
     }
 }

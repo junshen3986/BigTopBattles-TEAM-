@@ -1,9 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(Collider2D))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Key Bindings")]
+    public KeyCode moveLeftKey = KeyCode.A;
+    public KeyCode moveRightKey = KeyCode.D;
     public KeyCode jumpKey = KeyCode.W;
     public KeyCode crouchKey = KeyCode.S;
     public KeyCode blockKey = KeyCode.L;
@@ -13,131 +17,188 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float jumpForce = 12f;
-    [Tooltip("Scales both your initial jump force and the Rigidbody2D.gravityScale")]
     public float jumpFallMultiplier = 1f;
     public Vector3 characterScale = new Vector3(1.5f, 1.5f, 1f);
-    public Transform opponent;
 
     [Header("Ground Check")]
-    public Transform groundCheck;
     public LayerMask groundLayer;
-    public float groundCheckRadius = 0.1f;
+    public float groundRayDistance = 0.1f;
+
+    [Header("Hitboxes & Delays")]
+    public Collider2D lightPunchHitbox;
+    public Collider2D crouchLightHitbox;
+    public Collider2D heavyPunchHitbox;
+    public float lightPunchDelay = 0f;
+    public float crouchLightDelay = 0f;
+    public float heavyPunchDelay = 0f;
 
     [Header("Damage & Stun")]
-    public float stunDuration = 0.5f;    // how long to disable inputs
-    private float stunTimer;             // counts down when stunned
+    public float stunDuration = 0.5f;
 
+    [Header("Health")]
+    public int maxHealth = 100;
+    public Slider healthSlider;
+
+    [Header("Facing")]
+    public Transform opponent;
+
+    // internals
     Rigidbody2D rb;
     Animator anim;
+    Collider2D bodyCollider;
     float horizontalInput;
     bool isGrounded;
     bool hasJumped;
+    float stunTimer;
+    int currentHealth;
+
+    // coroutines for delayed hitbox activation
+    Coroutine lightPunchCoroutine;
+    Coroutine heavyPunchCoroutine;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-
-        // Apply the multiplier to gravity
+        bodyCollider = GetComponent<Collider2D>();
         rb.gravityScale = jumpFallMultiplier;
+
+        // health UI init
+        currentHealth = maxHealth;
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
+
+        // disable all hitboxes at start
+        lightPunchHitbox.enabled = false;
+        crouchLightHitbox.enabled = false;
+        heavyPunchHitbox.enabled = false;
     }
 
     void Update()
     {
-            // 0) Stun timer: if >0, reduce and skip input
-            if (stunTimer > 0f)
-            {
-                stunTimer -= Time.deltaTime;
-                return;
-            }
+        // 0) stun lockout
+        if (stunTimer > 0f)
+        {
+            stunTimer -= Time.deltaTime;
+            return;
+        }
 
-
-        // 1) Ground check
-            bool touchingGround = Physics2D.OverlapCircle(
-            groundCheck.position,
-            groundCheckRadius,
-            groundLayer
-        );
-        isGrounded = touchingGround && rb.velocity.y <= 0.001f;
+        // 1) ground check via raycast
+        Bounds b = bodyCollider.bounds;
+        Vector2 orig = new Vector2(b.center.x, b.min.y);
+        var hit = Physics2D.Raycast(orig, Vector2.down, groundRayDistance, groundLayer);
+        isGrounded = hit.collider != null;
         anim.SetBool("IsGrounded", isGrounded);
 
-        // 2) If grounded, reset jump
+        // 2) reset jump on landing
         if (isGrounded && hasJumped)
         {
             hasJumped = false;
             anim.SetBool("IsJumping", false);
         }
 
-        // 3) Horizontal movement / walking
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        anim.SetBool("IsWalking", horizontalInput != 0f);
+        // 3) horizontal movement input
+        float h = 0f;
+        if (Input.GetKey(moveLeftKey)) h = -1f;
+        if (Input.GetKey(moveRightKey)) h = +1f;
+        horizontalInput = h;
+        anim.SetBool("IsWalking", h != 0f);
 
-        // 4) Jump input: only if grounded and not already jumped
+        // 4) jump input
         if (Input.GetKeyDown(jumpKey) && isGrounded && !hasJumped)
         {
-            // Scale the jump force by the same multiplier
-            float actualJump = jumpForce * jumpFallMultiplier;
-            rb.velocity = new Vector2(rb.velocity.x, actualJump);
-
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce * jumpFallMultiplier);
             hasJumped = true;
             anim.SetBool("IsJumping", true);
         }
 
-        // 5) Crouch
-        anim.SetBool("IsCrouching", Input.GetKey(crouchKey));
+        // 5) crouch
+        bool isCrouching = Input.GetKey(crouchKey);
+        anim.SetBool("IsCrouching", isCrouching);
 
-        // 6) Block
+        // 6) block
         anim.SetBool("IsBlocking", Input.GetKey(blockKey));
 
-        // 7) Attacks
-        if (Input.GetKeyDown(lightPunchKey)) anim.SetTrigger("LightPunch1");
-        if (Input.GetKeyDown(heavyPunchKey)) anim.SetTrigger("HeavyPunch1");
-
-       /* if (Input.GetKeyDown(heavyPunchKey))
+        // 7a) light punch with delay
+        if (Input.GetKeyDown(lightPunchKey))
         {
-            if (anim.GetBool("IsCrouching"))
-                anim.SetTrigger("CrouchHeavyPunch");
-            else
-                anim.SetTrigger("HeavyPunch1");
-        } */
+            anim.SetTrigger("LightPunch1");
+            if (lightPunchCoroutine != null) StopCoroutine(lightPunchCoroutine);
+            lightPunchCoroutine = StartCoroutine(EnableHitboxAfterDelay(
+                isCrouching ? crouchLightHitbox : lightPunchHitbox,
+                isCrouching ? crouchLightDelay : lightPunchDelay
+            ));
+        }
+        if (Input.GetKeyUp(lightPunchKey))
+        {
+            if (lightPunchCoroutine != null)
+            {
+                StopCoroutine(lightPunchCoroutine);
+                lightPunchCoroutine = null;
+            }
+            lightPunchHitbox.enabled = false;
+            crouchLightHitbox.enabled = false;
+        }
 
+        // 7b) heavy punch with delay
+        if (Input.GetKeyDown(heavyPunchKey))
+        {
+            anim.SetTrigger("HeavyPunch1");
+            if (heavyPunchCoroutine != null) StopCoroutine(heavyPunchCoroutine);
+            heavyPunchCoroutine = StartCoroutine(EnableHitboxAfterDelay(
+                heavyPunchHitbox, heavyPunchDelay
+            ));
+        }
+        if (Input.GetKeyUp(heavyPunchKey))
+        {
+            if (heavyPunchCoroutine != null)
+            {
+                StopCoroutine(heavyPunchCoroutine);
+                heavyPunchCoroutine = null;
+            }
+            heavyPunchHitbox.enabled = false;
+        }
+
+        // 8) face opponent
         if (opponent != null)
         {
-            bool shouldFaceRight = opponent.position.x > transform.position.x;
-            float x = shouldFaceRight ? characterScale.x : -characterScale.x;
-            transform.localScale = new Vector3(x, characterScale.y, characterScale.z);
+            bool faceRight = opponent.position.x > transform.position.x;
+            float sx = faceRight ? characterScale.x : -characterScale.x;
+            transform.localScale = new Vector3(sx, characterScale.y, characterScale.z);
         }
     }
 
     void FixedUpdate()
     {
-        // Horizontal movement
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
-
     }
 
-    // Visualize your ground‐check radius in the Editor
-    void OnDrawGizmosSelected()
+    IEnumerator EnableHitboxAfterDelay(Collider2D hitbox, float delay)
     {
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-        }
+        yield return new WaitForSeconds(delay);
+        hitbox.enabled = true;
     }
 
-    /// <summary>
-    /// Call this to play your hit reaction.
-    /// </summary>
-
-    /// <summary>
-    /// Called by Hitbox when this character is hit.
-    /// </summary>
     public void TakeDamage(int amount)
     {
-        // (Optionally track health here)
+        currentHealth = Mathf.Max(currentHealth - amount, 0);
+        if (healthSlider != null) healthSlider.value = currentHealth;
         anim.SetTrigger("IsTakingDamage");
         stunTimer = stunDuration;
+        // death now handled elsewhere
     }
 
+    void OnDrawGizmosSelected()
+    {
+        if (bodyCollider != null)
+        {
+            Bounds bb = bodyCollider.bounds;
+            Vector2 o = new Vector2(bb.center.x, bb.min.y);
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(o, o + Vector2.down * groundRayDistance);
+        }
+    }
 }
